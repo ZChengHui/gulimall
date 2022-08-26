@@ -2,22 +2,19 @@ package com.atguigu.gulimall.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.atguigu.common.utils.PageUtils;
-import com.atguigu.gulimall.product.entity.SkuImagesEntity;
+import com.atguigu.gulimall.product.entity.SpuImagesEntity;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * sku图片
- *
- * @author zhangchenghui
- * @email 2783300744@qq.com
- * @date 2022-08-20 01:53:19
+ * spu图片
  */
-public interface SkuImagesService extends IService<SkuImagesEntity> {
+public interface SpuImagesService extends IService<SpuImagesEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 
     void saveImages(Long id, List<String> images);
+
 }
 
