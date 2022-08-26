@@ -184,6 +184,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 SkuReductionTO skuReductionTO = new SkuReductionTO();
                 BeanUtils.copyProperties(item, skuReductionTO);
                 skuReductionTO.setSkuId(skuId);
+                //compareTo 比大小
                 if (skuReductionTO.getFullCount() > 0 || skuReductionTO.getFullPrice().compareTo(new BigDecimal("0")) == 1) {
                     R r1 = couponFeignService.saveSkuReduction(skuReductionTO);
                     if (r1.getCode() != 0) {

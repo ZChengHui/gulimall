@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,18 +47,24 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
 
     @Override
     public void saveSkuReduction(SkuReductionTO reductionTo) {
-        //1.sku的优惠、满减等信息
+        //1.sku的优惠、满减、会员价格等信息
 //         * sms_sku_ladder
         SkuLadderEntity skuLadderEntity = new SkuLadderEntity();
         skuLadderEntity.setSkuId(reductionTo.getSkuId());
         skuLadderEntity.setFullCount(reductionTo.getFullCount());
         skuLadderEntity.setDiscount(reductionTo.getDiscount());
         skuLadderEntity.setAddOther(reductionTo.getCountStatus());
-        skuLadderService.save(skuLadderEntity);
+        if (reductionTo.getFullCount() > 0) {
+            skuLadderService.save(skuLadderEntity);
+        }
+
 //         * sms_sku_full_reduction
         SkuFullReductionEntity skuFullReductionEntity = new SkuFullReductionEntity();
         BeanUtils.copyProperties(reductionTo, skuFullReductionEntity);
-        this.save(skuFullReductionEntity);
+        if (skuFullReductionEntity.getFullPrice().compareTo(new BigDecimal("0")) == 1) {
+            this.save(skuFullReductionEntity);
+        }
+
 //         * sms_member_price
         List<MemberPrice> memberPrice = reductionTo.getMemberPrice();
         List<MemberPriceEntity> collect = memberPrice.stream().map(item -> {
@@ -68,7 +75,10 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
             memberPriceEntity.setMemberPrice(item.getPrice());
             memberPriceEntity.setAddOther(1);//默认叠加
             return memberPriceEntity;
+        }).filter(item -> {
+            return item.getMemberPrice().compareTo(new BigDecimal("0")) == 1;
         }).collect(Collectors.toList());
+
         memberPriceService.saveBatch(collect);
     }
 
