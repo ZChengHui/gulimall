@@ -2,7 +2,21 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: thirdpart_route
+        - id: coupon_route
+          uri: lb://gulimall-coupon
+          predicates:
+            - Path=/api/coupon/**
+          filters:
+            - RewritePath=/api/coupon/(?<segment>.*),/$\{segment}
+
+        - id: ware_route
+          uri: lb://gulimall-ware
+          predicates:
+              - Path=/api/ware/**
+          filters:
+              - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+        - id: member_route
           uri: lb://gulimall-member
           predicates:
             - Path=/api/member/**

@@ -7,18 +7,24 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient("gulimall-coupon")
+@FeignClient("gulimall-gateway")
 public interface CouponFeignService {
 
     /**
      * 类参数名一致即可json互转
+     *
+     * 1.给网关发请求 要加上完整路径
+     *      /api/coupon/coupon/spubounds/save
+     * 2.给远程服务发请求 用相对路径
+     *      /coupon/spubounds/save
+     *
      * @param spuBoundTO
      * @return
      */
-    @PostMapping("/coupon/spubounds/save")
+    @PostMapping("/api/coupon/coupon/spubounds/save")
     R saveSpuBounds(@RequestBody SpuBoundTO spuBoundTO);
 
     //满减
-    @PostMapping("/coupon/skufullreduction/saveinfo")
+    @PostMapping("/api/coupon/coupon/skufullreduction/saveinfo")
     R saveSkuReduction(@RequestBody SkuReductionTO skuReductionTO);
 }
