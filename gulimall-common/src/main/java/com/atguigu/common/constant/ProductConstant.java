@@ -20,4 +20,42 @@ public class ProductConstant {
         }
     }
 
+    public enum AttrSearchTypeEnum{
+        ATTR_NOT_SEARCH(0,"不可被检索"),ATTR_SEARCH(1,"可被检索");
+        private int code;
+        private String msg;
+        AttrSearchTypeEnum(int code, String msg){
+            this.code = code;
+            this.msg = msg;
+        }
+
+        public int getCode(){
+            return this.code;
+        }
+
+        public String getMsg(){
+            return this.msg;
+        }
+    }
+
+    public enum StatusEnum{
+        SPU_NEW(0,"新建"),
+        SPU_UP(1,"上架"),
+        SPU_DOWN(2,"下架");
+        private int code;
+        private String msg;
+        StatusEnum(int code, String msg){
+            this.code = code;
+            this.msg = msg;
+        }
+
+        public int getCode(){
+            return this.code;
+        }
+
+        public String getMsg(){
+            return this.msg;
+        }
+    }
+
 }

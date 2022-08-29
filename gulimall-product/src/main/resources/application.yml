@@ -1,5 +1,8 @@
 server:
   port: 10000
+logging:
+  level:
+    com.atguigu.gulimall: debug
 
 spring:
   datasource:
@@ -13,9 +16,11 @@ spring:
         server-addr: 127.0.0.1:8848
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
-
   application:
     name: gulimall-product
+  thymeleaf:
+    cache: false
+
 
 mybatis-plus:
   configuration:
