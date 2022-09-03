@@ -26,11 +26,11 @@ public class SkuEsModel {
 
     private Long brandId;
 
-    private Long catalogId;
-
     private String brandName;
 
     private String brandImg;
+
+    private Long catalogId;
 
     private String catalogName;
 
