@@ -31,10 +31,14 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,7 +69,7 @@ public class MallSearchServiceImpl implements MallSearchService {
             e.printStackTrace();
         }
 
-        return null;
+        return resultVO;
     }
 
     private SearchResultVO buildSearchResult(SearchResponse response, SearchParamVO param) {
@@ -171,6 +175,44 @@ public class MallSearchServiceImpl implements MallSearchService {
         resultVO.setTotal(total);
         resultVO.setTotalPage(totalPage);
 
+        //可以导航的页码
+        List<Integer> pageNav = new ArrayList<>();
+        for (int i = 1; i <= totalPage; i++) {
+            pageNav.add(i);
+        }
+        resultVO.setPageNav(pageNav);
+
+        //面包屑
+        if (!CollectionUtils.isEmpty(param.getAttrs())) {
+            List<SearchResultVO.NavVO> navVOS = param.getAttrs().stream().map(attr -> {
+                SearchResultVO.NavVO navVO = new SearchResultVO.NavVO();
+                //分析每一个搜索条件中attrs的参数值
+                String[] s = attr.split("_");
+                navVO.setNavValue(s[1]);
+                //利用之前封装的结果，根据属性值ID查询属性名
+                Map<Long, String> map = attrVOS.stream().collect(Collectors.toMap(
+                        k -> k.getAttrId(), v -> v.getAttrName()
+                ));
+                navVO.setNavName(map.get(Long.parseLong(s[0])));
+                //取消面包屑后要跳转 将请求地址的URL替换
+                //
+                String encode = null;
+                try {
+                    encode = URLEncoder.encode(attr, "UTF-8");
+                    //浏览器对空格编码和java不一样
+                    encode.replace("+", "%20");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                String replace = param.get_queryString().replace("&attrs=" + encode, "");
+                //新地址
+                navVO.setLink("http://search.gulimall.com/list.html?" + replace);
+                return navVO;
+            }).collect(Collectors.toList());
+
+            resultVO.setNavs(navVOS);
+        }
+
         return resultVO;
     }
 
@@ -218,7 +260,9 @@ public class MallSearchServiceImpl implements MallSearchService {
 
         }
         //库存
-        boolQuery.filter(QueryBuilders.termQuery("hasStock", param.getHasStock()==1));
+        if (param.getHasStock() != null) {
+            boolQuery.filter(QueryBuilders.termQuery("hasStock", param.getHasStock() == 1));
+        }
         //价格区间
         if (!StringUtils.isEmpty(param.getSkuPrice())) {
             //500_1000/500_/_1000

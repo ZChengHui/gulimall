@@ -46,4 +46,14 @@ public class SkuImagesServiceImpl extends ServiceImpl<SkuImagesDao, SkuImagesEnt
         }
     }
 
+    @Override
+    public List<SkuImagesEntity> getImagesBySkuId(Long skuId) {
+        SkuImagesDao imagesDao = this.baseMapper;
+        List<SkuImagesEntity> imagesEntities = imagesDao.selectList(
+                new QueryWrapper<SkuImagesEntity>()
+                        .eq("sku_id", skuId)
+        );
+        return imagesEntities;
+    }
+
 }

@@ -12,5 +12,33 @@
         <result property="attrValue" column="attr_value"/>
         <result property="attrSort" column="attr_sort"/>
     </resultMap>
+    <!-- 实体类映射 -->
+    <resultMap id="SkuItemSaleAttrVO" type="com.atguigu.gulimall.product.vo.SkuItemSaleAttrVO">
+        <result column="attr_id" property="attrId"></result>
+        <result column="attr_name" property="attrName"></result>
+        <collection property="attrValues" ofType="com.atguigu.gulimall.product.vo.AttrValueWithSkuIdVO">
+            <result column="attr_value" property="attrValue"></result>
+            <result column="sku_ids" property="skuIds"></result>
+        </collection>
+    </resultMap>
+
+    <!-- #GROUP_CONCAT(col)将col列的所有值拼接 再用distinct去重 -->
+    <!-- 使用别名快速映射 驼峰下划线互转 -->
+    <select id="getSaleAttrsBySpuId" resultMap="SkuItemSaleAttrVO">
+        SELECT
+            ssav.attr_id,
+            ssav.attr_name,
+            ssav.attr_value,
+            GROUP_CONCAT( DISTINCT si.sku_id ) sku_ids
+        FROM
+            pms_sku_info si
+                LEFT JOIN pms_sku_sale_attr_value ssav ON ssav.sku_id = si.sku_id
+        WHERE
+            si.spu_id = #{spuId}
+        GROUP BY
+            ssav.attr_id,
+            ssav.attr_name,
+            ssav.attr_value
+    </select>
 
 </mapper>

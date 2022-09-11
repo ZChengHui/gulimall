@@ -4,13 +4,15 @@ import java.util.Arrays;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.atguigu.common.exception.BizCodeEnume;
+import com.atguigu.gulimall.member.exception.PhoneExistException;
+import com.atguigu.gulimall.member.exception.UserNameExistException;
 import com.atguigu.gulimall.member.feign.CouponFeignService;
+import com.atguigu.gulimall.member.vo.LoginVO;
+import com.atguigu.gulimall.member.vo.RegisterVO;
+import org.hibernate.validator.internal.IgnoreForbiddenApisErrors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.atguigu.gulimall.member.entity.MemberEntity;
 import com.atguigu.gulimall.member.service.MemberService;
@@ -35,13 +37,40 @@ public class MemberController {
     @Autowired
     private CouponFeignService couponFeignService;
 
-    @RequestMapping("/coupons")
-    public R test() {
-        MemberEntity memberEntity = new MemberEntity();
-        memberEntity.setNickname("少打点");
-        R r = couponFeignService.membercoupons();
-        return R.ok().put("member", memberEntity).put("coupons", r.get("coupons"));
+    //登录
+    @PostMapping("/login")
+    public R login(@RequestBody LoginVO vo) {
+        MemberEntity entity = memberService.login(vo);
+        if (entity != null) {
+            //TODO 登录后续
+            return R.ok();
+        } else {
+            return R.error(
+                    BizCodeEnume.LOGINNAME_OR_PASSWORD_INVALID_EXCEPTION.getCode(),
+                    BizCodeEnume.LOGINNAME_OR_PASSWORD_INVALID_EXCEPTION.getMsg());
+        }
     }
+
+    //注册
+    @PostMapping("/register")
+    public R register(@RequestBody RegisterVO vo) {
+        try {
+            memberService.register(vo);
+        } catch (PhoneExistException e) {
+            return R.error(BizCodeEnume.PHONE_EXIST_EXCEPTION.getCode(), BizCodeEnume.PHONE_EXIST_EXCEPTION.getMsg());
+        } catch (UserNameExistException e) {
+            return R.error(BizCodeEnume.USER_EXIST_EXCEPTION.getCode(), BizCodeEnume.USER_EXIST_EXCEPTION.getMsg());
+        }
+        return R.ok();
+    }
+
+//    @RequestMapping("/coupons")
+//    public R test() {
+//        MemberEntity memberEntity = new MemberEntity();
+//        memberEntity.setNickname("少打点");
+//        R r = couponFeignService.membercoupons();
+//        return R.ok().put("member", memberEntity).put("coupons", r.get("coupons"));
+//    }
 
     /**
      * 列表

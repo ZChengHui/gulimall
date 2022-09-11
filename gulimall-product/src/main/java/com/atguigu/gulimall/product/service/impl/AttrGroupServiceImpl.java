@@ -1,15 +1,15 @@
 package com.atguigu.gulimall.product.service.impl;
 
-import com.atguigu.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import com.atguigu.gulimall.product.entity.AttrEntity;
 import com.atguigu.gulimall.product.service.AttrAttrgroupRelationService;
 import com.atguigu.gulimall.product.service.AttrService;
 import com.atguigu.gulimall.product.vo.AttrGroupWithAttrsVO;
+import com.atguigu.gulimall.product.vo.SkuItemVO;
+import com.atguigu.gulimall.product.vo.SpuItemAttrGroupAttrVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -86,6 +86,30 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
         }).collect(Collectors.toList());
 
         return attrGroupWithAttrsVOS;
+    }
+
+    @Override
+    public List<SpuItemAttrGroupAttrVO> getAttrGroupWithAttrsBySpuId(Long spuId, Long catalogId) {
+        /**
+         * 特定分类特定spu的属性分组下的属性名的属性值
+         * SELECT
+         * 	ag.attr_group_id,
+         * 	ag.attr_group_name,
+         * 	aar.attr_id,
+         * 	attr.attr_name,
+         * 	pav.attr_value
+         * FROM
+         * 	pms_attr_group ag
+         * 	LEFT JOIN pms_attr_attrgroup_relation aar ON aar.attr_group_id = ag.attr_group_id
+         * 	LEFT JOIN pms_attr attr ON attr.attr_id = aar.attr_id
+         * 	LEFT JOIN pms_product_attr_value pav ON pav.attr_id = attr.attr_id
+         * WHERE
+         * 	ag.catelog_id = 225
+         * 	AND pav.spu_id = 18
+         */
+        AttrGroupDao attrGroupDao = this.baseMapper;
+        List<SpuItemAttrGroupAttrVO> vos = attrGroupDao.getAttrGroupWithAttrsBySpuId(spuId, catalogId);
+        return vos;
     }
 
 }

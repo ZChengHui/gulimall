@@ -30,7 +30,7 @@ public class SearchParamVO {
      * brandId(品牌名称)
      * attrs(参数类型)
      */
-    private Integer hasStock = 1;//0无库存 1有库存
+    private Integer hasStock;//0无库存 1有库存
 
     private String skuPrice;
 
@@ -40,4 +40,7 @@ public class SearchParamVO {
 
     //分页页码
     private Integer pageNum = 1;
+
+    //原生的所有查询条件，由Controller HttpServeletRequest传值
+    private String _queryString;
 }

@@ -8,14 +8,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Controller
 public class SearchController {
 
     @Autowired
     MallSearchService mallSearchService;
 
-    @GetMapping("/list.html")
-    public String listPage(SearchParamVO param, Model model) {
+    @GetMapping({"/", "/list.html"})
+    public String listPage(SearchParamVO param, Model model, HttpServletRequest request) {
+        String queryString = request.getQueryString();
+        param.set_queryString(queryString);
         //去ES中检索
         SearchResultVO result = mallSearchService.search(param);
         //返回给页面
