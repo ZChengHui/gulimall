@@ -24,15 +24,15 @@ public class R extends HashMap<String, Object> {
 	private static final long serialVersionUID = 1L;
 
 	//继承了hashMap就别设置泛型
-	public <T> T getData(TypeReference<T> typeReference) {
-		Object data = get("data");//默认是map
+	public <T> T getData(String key, TypeReference<T> typeReference) {
+		Object data = get(key);//默认是map
 		String s = JSON.toJSONString(data);
 		T t = JSON.parseObject(s, typeReference);
 		return t;
 	}
 
-	public R setDate(Object data) {
-		put("data", data);
+	public R setData(String key, Object data) {
+		put(key, data);
 		return this;
 	}
 

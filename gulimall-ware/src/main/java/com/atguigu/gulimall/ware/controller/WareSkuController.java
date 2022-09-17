@@ -36,7 +36,7 @@ public class WareSkuController {
     public R getSkuHasStock(@RequestBody List<Long> skuIds) {
         List<SkuHasStockVO> vos = wareSkuService.hasStock(skuIds);
         //更改代码
-        return R.ok().setDate(vos);
+        return R.ok().setData("data", vos);
     }
 
 

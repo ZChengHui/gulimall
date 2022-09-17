@@ -1,8 +1,8 @@
 package com.atguigu.gulimall.search.controller;
 
 import com.atguigu.gulimall.search.service.MallSearchService;
-import com.atguigu.gulimall.vo.SearchParamVO;
-import com.atguigu.gulimall.vo.SearchResultVO;
+import com.atguigu.gulimall.search.vo.SearchParamVO;
+import com.atguigu.gulimall.search.vo.SearchResultVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

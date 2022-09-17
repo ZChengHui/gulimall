@@ -25,7 +25,7 @@ import com.atguigu.gulimall.product.service.AttrAttrgroupRelationService;
 public class AttrAttrgroupRelationServiceImpl extends ServiceImpl<AttrAttrgroupRelationDao, AttrAttrgroupRelationEntity> implements AttrAttrgroupRelationService {
 
     @Autowired
-    AttrAttrgroupRelationDao attrAttrgroupRelationDao;
+    private AttrAttrgroupRelationDao attrAttrgroupRelationDao;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {

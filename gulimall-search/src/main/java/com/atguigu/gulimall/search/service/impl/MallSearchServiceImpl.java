@@ -5,8 +5,8 @@ import com.atguigu.common.to.es.SkuEsModel;
 import com.atguigu.gulimall.search.EsConstant;
 import com.atguigu.gulimall.search.config.GulimallElasticSearchConfig;
 import com.atguigu.gulimall.search.service.MallSearchService;
-import com.atguigu.gulimall.vo.SearchParamVO;
-import com.atguigu.gulimall.vo.SearchResultVO;
+import com.atguigu.gulimall.search.vo.SearchParamVO;
+import com.atguigu.gulimall.search.vo.SearchResultVO;
 
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;

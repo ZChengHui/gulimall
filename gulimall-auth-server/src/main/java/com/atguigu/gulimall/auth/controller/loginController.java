@@ -4,6 +4,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.constant.AuthServerConstant;
 import com.atguigu.common.exception.BizCodeEnume;
 import com.atguigu.common.utils.R;
+import com.atguigu.common.vo.MemberResponseVO;
 import com.atguigu.gulimall.auth.feign.MemberFeignService;
 import com.atguigu.gulimall.auth.feign.ThirdPartFeignService;
 import com.atguigu.gulimall.auth.vo.UserLoginVO;
@@ -26,6 +27,8 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.atguigu.common.constant.AuthServerConstant.LOGIN_USER;
+
 @Controller
 public class loginController {
 
@@ -39,7 +42,7 @@ public class loginController {
     private StringRedisTemplate redis;
 
     @PostMapping("/login")
-    public String login(@Validated UserLoginVO vo, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String login(@Validated UserLoginVO vo, BindingResult result, RedirectAttributes redirectAttributes, HttpSession session) {
         //数据校验
         if (result.hasErrors()) {
 
@@ -57,6 +60,11 @@ public class loginController {
         R r = memberFeignService.login(vo);
         if (r.getCode() == 0) {
             //登录成功
+            MemberResponseVO data = r.getData("data",new TypeReference<MemberResponseVO>(){});
+            //session不能跨域名共享
+            //TODO 扩大域名至父域名
+            //使用JSON序列化方式
+            session.setAttribute(LOGIN_USER, data);
             return "redirect:http://gulimall.com";
         } else {
             //存放错误消息

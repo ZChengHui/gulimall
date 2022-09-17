@@ -43,7 +43,7 @@ public class MemberController {
         MemberEntity entity = memberService.login(vo);
         if (entity != null) {
             //TODO 登录后续
-            return R.ok();
+            return R.ok().setData("data", entity);
         } else {
             return R.error(
                     BizCodeEnume.LOGINNAME_OR_PASSWORD_INVALID_EXCEPTION.getCode(),
