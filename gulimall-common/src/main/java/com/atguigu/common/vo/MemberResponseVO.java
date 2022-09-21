@@ -1,6 +1,7 @@
 package com.atguigu.common.vo;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;

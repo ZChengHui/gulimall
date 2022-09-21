@@ -1,0 +1,23 @@
+package com.atguigu.gulimall.ware.vo;
+
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Data
+public class OrderItemVO {
+
+    private Long skuId;
+    private Boolean check;
+    private String title;
+    private String image;
+    private List<String> skuAttr;
+    private BigDecimal price;
+    private Integer count;
+    private BigDecimal totalPrice;
+    //TODO 库存状态
+    private boolean hasStock = false;
+    private BigDecimal weight;
+
+}

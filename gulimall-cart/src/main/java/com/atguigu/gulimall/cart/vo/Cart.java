@@ -44,11 +44,14 @@ public class Cart {
         return count;
     }
 
+    //计算选中的商品总价
     public BigDecimal getTotalAmount() {
         BigDecimal amount = new BigDecimal(0);
         if (!CollectionUtils.isEmpty(items)) {
             for (CartItem item : items) {
-                amount = amount.add(item.getTotalPrice());
+                if (item.getCheck()) {
+                    amount = amount.add(item.getTotalPrice());
+                }
             }
             //减去优惠
             amount =  amount.subtract(getReduce());

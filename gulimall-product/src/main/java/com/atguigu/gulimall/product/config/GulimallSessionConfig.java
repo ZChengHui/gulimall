@@ -1,8 +1,10 @@
 package com.atguigu.gulimall.product.config;
 
+import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.support.spring.GenericFastJsonRedisSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
@@ -22,7 +24,9 @@ public class GulimallSessionConfig {
     @Bean
     public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
         //序列化机制
+//        ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
         return new GenericFastJsonRedisSerializer();
+//        return new GenericJackson2JsonRedisSerializer();
     }
 
 }
