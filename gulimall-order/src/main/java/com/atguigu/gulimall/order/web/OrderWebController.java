@@ -16,6 +16,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpSession;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * 本地事务失效问题
+ * 事务使用代理对象控制，所以同一个对象内方法互调默认失效（绕过了代理）
+ * 解决：
+ * 1.使用AOP 引入aop-starter;spring-boot-starter-aop 引入aspectj
+ */
 @Controller
 public class OrderWebController {
 

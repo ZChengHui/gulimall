@@ -1,5 +1,7 @@
 package com.atguigu.gulimall.ware.service;
 
+import com.atguigu.common.to.mq.OrderTO;
+import com.atguigu.common.to.mq.StockLockedTO;
 import com.atguigu.gulimall.ware.vo.LockStockResultVO;
 import com.atguigu.gulimall.ware.vo.SkuHasStockVO;
 import com.atguigu.gulimall.ware.vo.WareSkuLockVO;
@@ -26,5 +28,9 @@ public interface WareSkuService extends IService<WareSkuEntity> {
     List<SkuHasStockVO> hasStock(List<Long> skuIds);
 
     boolean orderLockStock(WareSkuLockVO vo);
+
+    void unLockStock(StockLockedTO to);
+
+    void unLockStock(OrderTO order);
 }
 

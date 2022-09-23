@@ -26,4 +26,14 @@ public class WareOrderTaskServiceImpl extends ServiceImpl<WareOrderTaskDao, Ware
         return new PageUtils(page);
     }
 
+    //按订单号差库存工作单
+    @Override
+    public WareOrderTaskEntity getOrderTaskByOrderSn(String orderSn) {
+        WareOrderTaskEntity orderTask = this.getOne(
+                new QueryWrapper<WareOrderTaskEntity>()
+                        .eq("order_sn", orderSn)
+        );
+        return orderTask;
+    }
+
 }

@@ -3,6 +3,7 @@ package com.atguigu.gulimall.order.service.impl;
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.constant.OrderConstant;
 import com.atguigu.common.exception.NoStockException;
+import com.atguigu.common.to.mq.OrderTO;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberResponseVO;
 import com.atguigu.gulimall.order.dao.OrderItemDao;
@@ -17,6 +18,9 @@ import com.atguigu.gulimall.order.service.OrderItemService;
 import com.atguigu.gulimall.order.to.OrderCreateTO;
 import com.atguigu.gulimall.order.vo.*;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import io.seata.spring.annotation.GlobalTransactional;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -73,6 +77,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     private StringRedisTemplate redis;
+
+    @Autowired
+    private RabbitTemplate rabbit;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -149,8 +156,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * 下单操作
      * @param vo
      * @return
+     * 只在本地事务有效
+     * 改用分布式事务 跨服务回滚
      */
-    @Transactional
+//    @GlobalTransactional seata性能低
+    @Transactional//事务使用代理对象控制，所以同一个对象内方法互调默认失效（绕过了代理）
     @Override
     public SubmitOrderResponseVO submitOrder(OrderSubmitVO vo) {
         //线程传值
@@ -179,7 +189,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             BigDecimal payPrice = vo.getPayPrice();
             //金额对比
             if (Math.abs(payAmount.subtract(payPrice).doubleValue())<0.01) {
-                //保存订单
+                //TODO 保存订单
                 saveOrder(order);
                 //库存锁定 有异常则回滚
                 //订单号 订单项
@@ -199,6 +209,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 if (r.getCode() == 0) {
                     //锁库存成功
                     orderResponseVO.setOrder(order.getOrder());
+//                    int i = 10/0;
+                    //TODO 订单创建成功发送消息给MQ
+                    rabbit.convertAndSend(
+                            "order-event-exchange",
+                            "order.create.order",
+                            order.getOrder()
+                    );
                     return orderResponseVO;
                 } else {
                     //失败 库存不足
@@ -219,6 +236,47 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 //        } else {
 //
 //        }
+    }
+
+    //根据订单号获取订单
+    @Override
+    public OrderEntity getOrderByOrderSn(String orderSn) {
+        OrderEntity orderEntity = this.getOne(
+                new QueryWrapper<OrderEntity>()
+                        .eq("order_sn", orderSn)
+        );
+        return orderEntity;
+    }
+
+    @Override
+    public void closeOrder(OrderEntity entity) {
+        //查询当前订单最新状态
+        OrderEntity orderEntity = this.getById(entity.getId());
+        //如果是待付款状态 则取消订单
+        if (orderEntity.getStatus() == OrderStatusEnum.CREATE_NEW.getCode()) {
+            //修改订单状态
+            OrderEntity updateOrder = new OrderEntity();
+            updateOrder.setId(orderEntity.getId());
+            updateOrder.setStatus(OrderStatusEnum.CANCLED.getCode());
+            this.updateById(updateOrder);
+
+            OrderTO orderTO = new OrderTO();
+            BeanUtils.copyProperties(orderEntity, orderTO);
+
+            //订单释放消息 发给MQ
+            try {
+                //TODO 保证消息一定发送 每个消息做好日志记录（数据库持久化）
+                //TODO 定期扫描数据库将失败消息重新发送
+                rabbit.convertAndSend(
+                        "order-event-exchange",
+                        "order.release.other",
+                        orderTO
+                );
+            } catch (Exception e) {
+                //TODO 将发送失败的消息重试
+
+            }
+        }
     }
 
     //保存订单数据

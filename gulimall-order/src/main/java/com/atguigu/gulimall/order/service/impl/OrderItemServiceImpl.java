@@ -37,6 +37,7 @@ public class OrderItemServiceImpl extends ServiceImpl<OrderItemDao, OrderItemEnt
     }
 
     /**
+     * TODO MQ Test
      * queues 监听的所有队列
      * Message 原生消息详细信息
      * 可自动解析出对象内容

@@ -3,6 +3,7 @@ package com.atguigu.gulimall.order.interceptor;
 import com.atguigu.common.constant.AuthServerConstant;
 import com.atguigu.common.vo.MemberResponseVO;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,14 @@ public class LoginUserInterceptor implements HandlerInterceptor {
     //配置拦截器
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        ///order/order/status/{orderSn} 请求路径白名单 远程调用 头丢失
+        String uri = request.getRequestURI();
+        boolean match = new AntPathMatcher().match("/order/order/status/**", uri);
+        if (match) {
+            return true;
+        }
+
         HttpSession session = request.getSession();
         MemberResponseVO attribute = (MemberResponseVO) session.getAttribute(AuthServerConstant.LOGIN_USER);
         if (attribute != null) {

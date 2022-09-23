@@ -56,6 +56,11 @@ public class MyRabbitConfig {
              */
             @Override
             public void confirm(CorrelationData correlationData, boolean b, String s) {
+                /**
+                 * 手动ack
+                 * 每一个发送的消息记录到数据库，定期扫描失败的消息
+                 */
+                //服务器收到
                 System.out.println("confirm "+correlationData+"\nack "+b+"\ns "+s);
             }
         };
@@ -73,6 +78,7 @@ public class MyRabbitConfig {
              */
             @Override
             public void returnedMessage(Message message, int i, String s, String s1, String s2) {
+                //报错误
                 System.out.println("Fail MSG"+message+"\ncode="+i+"\nexchange="+s1+"\nrount-key="+s2);
             }
         };
