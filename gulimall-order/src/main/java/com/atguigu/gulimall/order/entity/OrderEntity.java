@@ -1,12 +1,17 @@
 package com.atguigu.gulimall.order.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.math.BigDecimal;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 订单
@@ -39,7 +44,12 @@ public class OrderEntity implements Serializable {
 	private Long couponId;
 	/**
 	 * create_time
+	 * 时间问题
+	 * @DateTimeFormat 保证存入数据库的时间格式
+	 * @JsonFormat 保证查询结果的json序列化格式
 	 */
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date createTime;
 	/**
 	 * 用户名
@@ -172,22 +182,36 @@ public class OrderEntity implements Serializable {
 	/**
 	 * 支付时间
 	 */
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date paymentTime;
 	/**
 	 * 发货时间
 	 */
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date deliveryTime;
 	/**
 	 * 确认收货时间
 	 */
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date receiveTime;
 	/**
 	 * 评价时间
 	 */
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date commentTime;
 	/**
 	 * 修改时间
 	 */
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date modifyTime;
+
+	//订单项
+	@TableField(exist = false)
+	private List<OrderItemEntity> itemEntities;
 
 }

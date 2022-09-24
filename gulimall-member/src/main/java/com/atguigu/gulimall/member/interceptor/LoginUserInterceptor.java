@@ -1,4 +1,4 @@
-package com.atguigu.gulimall.order.interceptor;
+package com.atguigu.gulimall.member.interceptor;
 
 import com.atguigu.common.constant.AuthServerConstant;
 import com.atguigu.common.vo.MemberResponseVO;
@@ -19,12 +19,10 @@ public class LoginUserInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        ///order/order/status/{orderSn} 请求路径白名单 远程调用 头丢失
+        ///请求路径白名单 远程调用 头丢失
         String uri = request.getRequestURI();
-        AntPathMatcher matcher = new AntPathMatcher();
-        boolean matchOrder = matcher.match("/order/order/status/**", uri);
-        boolean matchPay = matcher.match("/payed/**", uri);
-        if (matchPay || matchOrder) {
+        boolean match = new AntPathMatcher().match("/member/**", uri);
+        if (match) {
             return true;
         }
 
