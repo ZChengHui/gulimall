@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,7 @@ public class SeckillSkuScheduled {
      * 幂等性处理
      * 分布式锁
      */
+    @Async
     @Scheduled(cron = "*/5 * * * * ?")
     public void uploadSeckillSku() {
         //重复上架不处理
