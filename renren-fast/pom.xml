@@ -11,7 +11,8 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.6.6</version>
+		<!-- 2.6.6 -->
+		<version>2.1.8.RELEASE</version>
 		<!-- 不依赖本地parent pom,直接从repository拉取,相当于用自己的 -->
 		<relativePath></relativePath>
 	</parent>

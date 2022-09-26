@@ -506,8 +506,14 @@
 									<span>￥</span>
 									<span th:text="${#numbers.formatDecimal(item.info.price,3,2)}">4499.00</span>
 								</li>
-								<li>
-									预约享资格
+								<!-- *** 秒杀信息 *** -->
+								<li style="color: red" th:if="${item.seckillInfo!=null}">
+									<span th:if="${#dates.createNow().getTime() < item.seckillInfo.startTime}">
+										预计&nbsp[[${#dates.format(new java.util.Date(item.seckillInfo.startTime),'yyyy-MM-dd HH:mm:ss')}]]&nbsp开始秒杀
+									</span>
+									<span th:if="${#dates.createNow().getTime() >= item.seckillInfo.startTime && #dates.createNow().getTime() <= item.seckillInfo.endTime}">
+										秒杀价：￥[[${#numbers.formatDecimal(item.seckillInfo.seckillPrice,1,2)}]]
+									</span>
 								</li>
 								<li>
 									<a href="/static/item/">
@@ -627,9 +633,14 @@
 
 								</div>
 							</div>
-							<div class="box-btns-two">
+							<div class="box-btns-two" th:if="${item.seckillInfo!=null && #dates.createNow().getTime() >= item.seckillInfo.startTime && #dates.createNow().getTime() <= item.seckillInfo.endTime}">
+								<a href="#" id="seckillA" th:attr="skuId=${item.info.skuId},sessionId=${item.seckillInfo.promotionSessionId},code=${item.seckillInfo.randomCode}">
+										立即秒杀
+								</a>
+							</div>
+							<div class="box-btns-two" th:if="${item.seckillInfo==null || (#dates.createNow().getTime() < item.seckillInfo.startTime || #dates.createNow().getTime() > item.seckillInfo.endTime)}">
 								<a href="#" id="addToCartA" th:attr="skuId=${item.info.skuId}">
-									加入购物车
+										加入购物车
 								</a>
 							</div>
 							<div class="box-btns-three">
@@ -1281,6 +1292,19 @@
 			var num = $("#numInput").val();
 			var skuId = $(this).attr("skuId");
 			location.href = "http://cart.gulimall.com/addToCart?skuId="+skuId+"&num="+num;
+			return false;
+		});
+
+		$("#seckillA").click(function () {
+			var isLogin = [[${session.loginUser!=null}]];
+			if (isLogin) {
+				var killId = $(this).attr("sessionId") + "_" + $(this).attr("skuId");
+				var key = $(this).attr("code");
+				var num = $("#numInput").val();
+				location.href = "http://seckill.gulimall.com/kill?killId="+killId+"&key="+key+"&num="+num;
+			} else {
+				alert("请先登录");
+			}
 			return false;
 		});
 		

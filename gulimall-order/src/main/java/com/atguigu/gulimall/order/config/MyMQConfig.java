@@ -16,6 +16,12 @@ import java.util.Map;
 @Configuration
 public class MyMQConfig {
 
+    //削峰队列
+    @Bean
+    public Queue orderSeckillOrderQueue() {
+        return new Queue("order.seckill.order.queue", true, false, false);
+    }
+
     //死信队列
     @Bean
     public Queue orderDelayQueue() {
@@ -85,6 +91,18 @@ public class MyMQConfig {
                 "order.release.other.#",//路由键
                 null);
         return binding;
+    }
+
+    //绑定秒杀削峰队列
+    @Bean
+    public Binding orderSeckillOrderQueueBinding() {
+        return new Binding(
+                "order.seckill.order.queue",//普通队列
+                Binding.DestinationType.QUEUE,
+                "order-event-exchange",//交换机
+                "order.seckill.order",//路由键
+                null
+        );
     }
 
 }

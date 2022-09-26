@@ -1,8 +1,12 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
+import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.product.entity.SkuImagesEntity;
 import com.atguigu.gulimall.product.entity.SpuInfoDescEntity;
+import com.atguigu.gulimall.product.feign.SeckillFeignService;
 import com.atguigu.gulimall.product.service.*;
+import com.atguigu.gulimall.product.vo.SeckillInfoVO;
 import com.atguigu.gulimall.product.vo.SkuItemSaleAttrVO;
 import com.atguigu.gulimall.product.vo.SkuItemVO;
 import com.atguigu.gulimall.product.vo.SpuItemAttrGroupAttrVO;
@@ -40,6 +44,9 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     @Autowired
     SkuSaleAttrValueService skuSaleAttrValueService;
+
+    @Autowired
+    SeckillFeignService seckillFeignService;
 
     @Autowired
     ThreadPoolExecutor executor;
@@ -154,8 +161,18 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
             skuItemVO.setImages(images);
         }, executor);
 
+        CompletableFuture<Void> seckillFuture = CompletableFuture.runAsync(() -> {
+            //查询当前sku是否参与秒杀优惠
+            R seckillInfo = seckillFeignService.getSkuSeckillInfo(skuId);
+            if (seckillInfo.getCode() == 0) {
+                SeckillInfoVO seckillInfoData = seckillInfo.getData("data", new TypeReference<SeckillInfoVO>() {
+                });
+                skuItemVO.setSeckillInfo(seckillInfoData);
+            }
+        }, executor);
+
         //等待所有任务完成
-        CompletableFuture.allOf(saleAttrFuture, descFuture, baseAttrFuture, imgFuture).get();
+        CompletableFuture.allOf(saleAttrFuture, descFuture, baseAttrFuture, imgFuture, seckillFuture).get();
 
         return skuItemVO;
     }

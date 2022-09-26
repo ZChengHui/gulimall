@@ -4,6 +4,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.constant.OrderConstant;
 import com.atguigu.common.exception.NoStockException;
 import com.atguigu.common.to.mq.OrderTO;
+import com.atguigu.common.to.mq.SeckillOrderTO;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberResponseVO;
 import com.atguigu.gulimall.order.dao.OrderItemDao;
@@ -354,6 +355,31 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return "success";
     }
 
+    //创建秒杀订单
+    @Override
+    public void createSeckillOrder(SeckillOrderTO seckillOrder) {
+        //TODO 保存订单
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setOrderSn(seckillOrder.getOrderSn());
+        orderEntity.setMemberId(seckillOrder.getMemberId());
+        orderEntity.setCreateTime(new Date());
+        BigDecimal total = seckillOrder.getSeckillPrice().multiply(BigDecimal.valueOf(seckillOrder.getNum()));
+        orderEntity.setPayAmount(total);
+        orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
+        this.save(orderEntity);
+
+        //TODO 订单项信息
+        OrderItemEntity itemEntity = new OrderItemEntity();
+
+        itemEntity.setOrderSn(seckillOrder.getOrderSn());
+        itemEntity.setRealAmount(total);
+        //TODO 获取当前sku详细信息进行设置
+        itemEntity.setSkuQuantity(seckillOrder.getNum());
+
+        orderItemService.save(itemEntity);
+
+    }
+
 
     //保存订单数据
     private void saveOrder(OrderCreateTO order) {
@@ -415,7 +441,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     }
 
-    //构建订单
+    //构建订单基本信息
     private OrderEntity buildOrder(String orderSn) {
         //线程获取值
         OrderSubmitVO submitVO = submitVOThreadLocal.get();
