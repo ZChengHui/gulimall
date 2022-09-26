@@ -1,5 +1,6 @@
 package com.atguigu.common.to.mq;
 
+import com.atguigu.common.vo.SkuInfoVO;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -31,5 +32,9 @@ public class SeckillOrderTO {
      * 会员id
      */
     private Long memberId;
+    /**
+     * 商品sku信息
+     */
+    private SkuInfoVO skuInfo;
 
 }

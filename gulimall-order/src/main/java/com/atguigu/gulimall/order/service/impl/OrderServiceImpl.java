@@ -7,6 +7,7 @@ import com.atguigu.common.to.mq.OrderTO;
 import com.atguigu.common.to.mq.SeckillOrderTO;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberResponseVO;
+import com.atguigu.common.vo.SkuInfoVO;
 import com.atguigu.gulimall.order.dao.OrderItemDao;
 import com.atguigu.gulimall.order.entity.OrderItemEntity;
 import com.atguigu.gulimall.order.entity.PaymentInfoEntity;
@@ -301,7 +302,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         OrderItemEntity itemEntity = list.get(0);
 
         payVo.setSubject(itemEntity.getSkuName()+"...");
-        payVo.setBody(itemEntity.getSkuAttrsVals()+"...");
+        payVo.setBody("X"+itemEntity.getSkuQuantity()+"件...");
         payVo.setOut_trade_no(orderEntity.getOrderSn());
 
         return payVo;
@@ -368,13 +369,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
         this.save(orderEntity);
 
-        //TODO 订单项信息
+        //TODO 订单项信息 获取当前sku详细信息进行设置
         OrderItemEntity itemEntity = new OrderItemEntity();
+        SkuInfoVO skuInfo = seckillOrder.getSkuInfo();
 
         itemEntity.setOrderSn(seckillOrder.getOrderSn());
         itemEntity.setRealAmount(total);
-        //TODO 获取当前sku详细信息进行设置
         itemEntity.setSkuQuantity(seckillOrder.getNum());
+        itemEntity.setSkuName(skuInfo.getSkuName());
+        itemEntity.setSkuPic(skuInfo.getSkuDefaultImg());
 
         orderItemService.save(itemEntity);
 

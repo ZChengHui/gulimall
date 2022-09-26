@@ -11,8 +11,7 @@ import com.atguigu.gulimall.seckill.interceptor.LoginUserInterceptor;
 import com.atguigu.gulimall.seckill.service.SeckillService;
 import com.atguigu.gulimall.seckill.to.SeckillSkuRedisTO;
 import com.atguigu.gulimall.seckill.vo.SeckillSessionWithSkusVO;
-import com.atguigu.gulimall.seckill.vo.SeckillSkuVO;
-import com.atguigu.gulimall.seckill.vo.SkuInfoVO;
+import com.atguigu.common.vo.SkuInfoVO;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RSemaphore;
@@ -21,13 +20,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
-import org.springframework.data.redis.core.KeyBoundCursor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -137,7 +133,7 @@ public class SeckillServiceImpl implements SeckillService {
 
     //开始秒杀
     @Override
-    public String kill(String killId, String key, Integer num) {
+    public SeckillOrderTO kill(String killId, String key, Integer num) {
         long s1 = System.currentTimeMillis();
 
         MemberResponseVO memberResponseVO = LoginUserInterceptor.loginUser.get();
@@ -185,6 +181,8 @@ public class SeckillServiceImpl implements SeckillService {
                                 seckillOrderTO.setPromotionSessionId(redisTO.getPromotionSessionId());
                                 seckillOrderTO.setSeckillPrice(redisTO.getSeckillPrice());
                                 seckillOrderTO.setSkuId(redisTO.getSkuId());
+                                //商品信息
+                                seckillOrderTO.setSkuInfo(redisTO.getSkuInfo());
                                 //发消息
                                 rabbit.convertAndSend(
                                         "order-event-exchange",
@@ -193,7 +191,7 @@ public class SeckillServiceImpl implements SeckillService {
                                 );
                                 long s3 = System.currentTimeMillis();
                                 log.info("耗时..." + (s3 - s1));
-                                return timeId;//返回订单号
+                                return seckillOrderTO;//返回订单号
                             } else {
                                 return null;
                             }

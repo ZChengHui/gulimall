@@ -1,6 +1,7 @@
 package com.atguigu.gulimall.seckill.service;
 
 
+import com.atguigu.common.to.mq.SeckillOrderTO;
 import com.atguigu.gulimall.seckill.to.SeckillSkuRedisTO;
 
 import java.util.List;
@@ -13,5 +14,5 @@ public interface SeckillService {
 
     SeckillSkuRedisTO getSkuSeckillInfo(Long skuId);
 
-    String kill(String killId, String key, Integer num) throws InterruptedException;
+    SeckillOrderTO kill(String killId, String key, Integer num);
 }

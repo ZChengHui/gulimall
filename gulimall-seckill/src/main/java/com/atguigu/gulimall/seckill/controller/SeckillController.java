@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.seckill.controller;
 
+import com.atguigu.common.to.mq.SeckillOrderTO;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.seckill.service.SeckillService;
 import com.atguigu.gulimall.seckill.to.SeckillSkuRedisTO;
@@ -44,13 +45,8 @@ public class SeckillController {
                           @RequestParam("num") Integer num,
                           Model model) {
 
-        String orderSn = null;
-        try {
-            orderSn = seckillService.kill(killId,key,num);
-            model.addAttribute("orderSn", orderSn);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        SeckillOrderTO seckillOrder = seckillService.kill(killId,key,num);
+        model.addAttribute("seckillOrder", seckillOrder);
         return "success";
     }
 

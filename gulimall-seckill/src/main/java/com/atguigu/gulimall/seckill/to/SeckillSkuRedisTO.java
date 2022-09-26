@@ -1,6 +1,6 @@
 package com.atguigu.gulimall.seckill.to;
 
-import com.atguigu.gulimall.seckill.vo.SkuInfoVO;
+import com.atguigu.common.vo.SkuInfoVO;
 import lombok.Data;
 
 import java.math.BigDecimal;
